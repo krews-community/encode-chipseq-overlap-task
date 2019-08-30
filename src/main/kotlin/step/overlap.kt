@@ -4,7 +4,7 @@ import util.CmdRunner
 import java.nio.file.Files
 import java.nio.file.Path
 import util.*
-fun CmdRunner.overlap(peak1: Path, peak2: Path, pooledPeak: Path,chrsz:Path, peakType:String, keepIrregularChr:Boolean,nonamecheck:Boolean, fraglen:Path, taFile: Path,  blacklistFile: Path, outDir: Path, outputPrefix:String){
+fun CmdRunner.overlap(peak1: Path, peak2: Path, pooledPeak: Path,chrsz:Path, peakType:String, keepIrregularChr:Boolean,nonamecheck:Boolean, fraglen:Path, taFile: Path,  blacklistFile: Path?, outDir: Path, outputPrefix:String){
 
     Files.createDirectories(outDir)
 
@@ -43,14 +43,19 @@ fun CmdRunner.overlapFun(outputPrefix:String, peak1:Path, peak2:Path, peak_poole
     val tmp2 = gunzip(peak2.toString(),  out_dir,"tmp2")
     val tmp_pooled = gunzip(peak_pooled.toString(),  out_dir,"tmp_pooled")
 
-    var cmd1 = "intersectBed ${nonamecheck_param} -wo "
+    var cmd1 = "bedtools intersect \\\n" +
+            "                    -a ${tmp_pooled} -b ${tmp1} -f 0.50 -F 0.50 -e -u |\\\n" +
+            "                    bedtools intersect \\\n" +
+            "                    -a stdin -b ${tmp2} -f 0.50 -F 0.50 -e -u | gzip -nc > ${overlap_peak}"
+
+   /* var cmd1 = "intersectBed ${nonamecheck_param} -wo "
     cmd1 += "-a ${tmp_pooled} -b ${tmp1} | "
     cmd1 += "awk \'BEGIN{{FS='\\t';OFS='\\t'}} ${awk_param}\' | "
     cmd1 += "cut -f ${cut_param} | sort | uniq | "
     cmd1 += "intersectBed ${nonamecheck_param} -wo "
     cmd1 += "-a stdin -b ${tmp2} | "
     cmd1 += "awk \'BEGIN{{FS='\\t';OFS='\\t'}} ${awk_param}\' | "
-    cmd1 += "cut -f ${cut_param} | sort | uniq | gzip -nc > ${overlap_peak}"
+    cmd1 += "cut -f ${cut_param} | sort | uniq | gzip -nc > ${overlap_peak}"*/
 
     this.run(cmd1)
     rm_f(listOf(tmp1,tmp2,tmp_pooled))

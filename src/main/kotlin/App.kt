@@ -29,8 +29,8 @@ class Cli : CliktCommand() {
             .path().required()
     private val chrsz:Path by option("-chrsz",help = "2-col chromosome sizes file.").path().required()
 
-    private val blacklistFile: Path by option("-blacklist", help = "Blacklist BED file.")
-            .path().required()
+    private val blacklistFile: Path? by option("-blacklist", help = "Blacklist BED file.")
+            .path()
 
     override fun run() {
         val cmdRunner = DefaultCmdRunner()
@@ -44,7 +44,7 @@ class Cli : CliktCommand() {
  * @param taFiles pooledTa Input
  * @param outDir Output Path
  */
-fun CmdRunner.runTask(peak1:Path,peak2:Path,pooledPeak:Path,chrsz:Path,peakType:String,keepIrregularChr:Boolean,nonamecheck:Boolean,fraglen:Path,taFile:Path,blacklistFile:Path, outDir:Path,outputPrefix:String) {
+fun CmdRunner.runTask(peak1:Path,peak2:Path,pooledPeak:Path,chrsz:Path,peakType:String,keepIrregularChr:Boolean,nonamecheck:Boolean,fraglen:Path,taFile:Path,blacklistFile:Path?, outDir:Path,outputPrefix:String) {
 
     overlap(peak1, peak2, pooledPeak,chrsz, peakType, keepIrregularChr,nonamecheck, fraglen, taFile,  blacklistFile, outDir, outputPrefix)
 }
